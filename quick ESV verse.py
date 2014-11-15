@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-# A lot of this code is from Christian Wyglendowski found at http://www.esvapi.org/api#verse
+# This is one of my first scripts to make Drafts & Pythonista into a quick little ESV Bible. It will pull multiple passages that are on separate lines in a draft and return them as the reference & Bible text.
+# The ESVSession class is from Christian Wyglendowski's sample code found at http://www.esvapi.org/api#verse.
 # Adapted for Drafts & Pythonista on iOS by @pfcbenjamin
 # Corresponding Drafts action [available here](http://drafts4-actions.agiletortoise.com/a/1NA)
+# I'm sure that this could use some major cleanup by someone who knows Python.
 
 import urllib
 import sys
@@ -41,26 +43,21 @@ reference = clipboard.get() # the Drafts action sets the draft to the clipboard.
 reference = reference.encode() # make the Unicode text a String - otherwise 'splitlines' throws a fit.
 reference = reference.title() # make those lowercase characters upper case
 
-# this is a working version to count the number of lines
-
-lines = str.splitlines(reference)
+lines = str.splitlines(reference) # this is a working version to count the number of lines
 
 for i, v in enumerate(reference):
-	totallines = i
+	totallines = i # end of section
 
-# end of section
-
-fulltext = []
+fulltext = [] # Make list to spit multiple passages into
 
 passages = lines
 for reference in passages:
-   bibletext = '**' + reference + '**' + bible.doPassageQuery(reference)
+   bibletext = '**' + reference + '**' + bible.doPassageQuery(reference) # This gives you a markdown-style bold text.
    fulltext.append(bibletext)
 
 fulltext = '\n\n'.join(fulltext) # Converts list to string
 
 url = 'drafts4://x-callback-url/create?text=' + urllib.quote(fulltext)
 
-# check to see that drafts is installed. probably not necessary, but...
-if webbrowser.can_open('drafts4://') == True:
+if webbrowser.can_open('drafts4://') == True: # Check to see that Drafts is installed.
 	webbrowser.open(url)
