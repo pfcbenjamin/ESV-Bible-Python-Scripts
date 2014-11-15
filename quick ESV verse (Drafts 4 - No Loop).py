@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-# A lot of this code is from Christian Wyglendowski found at http://www.esvapi.org/api#verse
-# Adapted for Drafts & Pythonista on iOS by @pfcbenjamin
-# Corresponding Drafts action [available here](http://drafts4-actions.agiletortoise.com/a/1NA)
-
+#sample code by Christian Wyglendowski found at http://www.esvapi.org/api#verse
 
 import urllib
 import sys
@@ -34,31 +31,40 @@ class ESVSession:
         page = urllib.urlopen(url)
         return page.read()
 
-key = 'IP' # You can access the ESV text using the key "IP" (without the quotes). This key limits you to 5,000 queries per day from a single IP address. You are bound by the below conditions of use, including the non-commercial aspects.
+key = 'IP'
 
 bible = ESVSession(key)
 
-passage = clipboard.get() # the Drafts action sets the draft to the clipboard. I did this because it's easy and I'm not good at Python.
+'''This is remnant code from the Drafts 3 action before the clipboard was available.
+book = sys.argv[1]
+verse = sys.argv[2]
+third = sys.argv[3]
 
-# this is a working version to count the number of lines
+passage = book + ' ' + verse + ' ' + third'''
 
-lines = str.splitlines(passage)
+passage = clipboard.get()
 
-for i, v in enumerate(lines):
-	totallines = i
+bibletext = bible.doPassageQuery(passage)
 
-# end of section
+fulltext = '**' + passage + '**' + '\n' + bibletext
 
-passages = lines
-for passage in passages:
-   bibletext = '**' + passage + '**', bible.doPassageQuery(passage)
-
-"""" bibletext = bible.doPassageQuery(passage) # This was used before I got the loop in lines 54-56 above.
-
-fulltext = '##' + passage + '\n' + bibletext"""
-
-url = 'drafts4://x-callback-url/create?text=' + urllib.quote(fulltext) #
+url = 'drafts4://x-callback-url/create?text=' + urllib.quote(fulltext)
 
 # check to see that drafts is installed. probably not necessary, but...
 if webbrowser.can_open('drafts4://') == True:
 	webbrowser.open(url)
+
+'''this is Eric Pramono's code for LCP actions.
+
+encodedscheme = urllib.quote(urlscheme)
+
+if (mode == 1):
+  url = 'dayone://post?entry=' + urllib.quote(result)
+elif (mode == 2):
+  url = 'onewriter://x-callback-url/append?path=Documents&name=Sermon%20Notes.md&type=local&text=%0A' + urllib.quote('_' + result + '_\n')
+elif (mode == 3):
+  url = 'launch://x-callback-url/messaging?body=' + urllib.quote(ov + '\n\n' + urlscheme) + '&x-success=' + encodedscheme
+else:
+  url = 'launch://x-callback-url/messaging?body=' + urllib.quote(book + ' ' + cv + '\n\nLink: ' + urlscheme) + '&x-success=' + encodedscheme
+
+webbrowser.open(url)'''
