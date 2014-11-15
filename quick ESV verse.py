@@ -3,7 +3,6 @@
 # Adapted for Drafts & Pythonista on iOS by @pfcbenjamin
 # Corresponding Drafts action [available here](http://drafts4-actions.agiletortoise.com/a/1NA)
 
-
 import urllib
 import sys
 import console
@@ -38,26 +37,29 @@ key = 'IP' # You can access the ESV text using the key "IP" (without the quotes)
 
 bible = ESVSession(key)
 
-passage = clipboard.get() # the Drafts action sets the draft to the clipboard. I did this because it's easy and I'm not good at Python.
+reference = clipboard.get() # the Drafts action sets the draft to the clipboard. I did this because it's easy and I'm not good at Python. If you have a better way, let me know!
+reference = reference.encode() # make the Unicode text a String - otherwise 'splitlines' throws a fit.
+reference = reference.title() # make those lowercase characters upper case
 
 # this is a working version to count the number of lines
 
-lines = str.splitlines(passage)
+lines = str.splitlines(reference)
 
-for i, v in enumerate(lines):
+for i, v in enumerate(reference):
 	totallines = i
 
 # end of section
 
+fulltext = []
+
 passages = lines
-for passage in passages:
-   bibletext = '**' + passage + '**', bible.doPassageQuery(passage)
+for reference in passages:
+   bibletext = '**' + reference + '**' + bible.doPassageQuery(reference)
+   fulltext.append(bibletext)
 
-"""" bibletext = bible.doPassageQuery(passage) # This was used before I got the loop in lines 54-56 above.
+fulltext = '\n\n'.join(fulltext) # Converts list to string
 
-fulltext = '##' + passage + '\n' + bibletext"""
-
-url = 'drafts4://x-callback-url/create?text=' + urllib.quote(fulltext) #
+url = 'drafts4://x-callback-url/create?text=' + urllib.quote(fulltext)
 
 # check to see that drafts is installed. probably not necessary, but...
 if webbrowser.can_open('drafts4://') == True:
